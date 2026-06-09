@@ -6,3 +6,6 @@ __pycache__/
 dist/
 build/
 .env
+ecg_train.npy
+ecg_test.npy
+*.npy
