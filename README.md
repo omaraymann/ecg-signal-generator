@@ -56,8 +56,8 @@ All three quantitative metrics passed acceptance thresholds on the held-out test
 
 | File | Description |
 |------|-------------|
-| `preprocess.py` | Full preprocessing pipeline — filter, normalise, segment, train/test split |
-| `final_code.ipynb` | Main GAN training notebook (256 hidden units, 50 epochs, best visual results) |
+| `code/preprocess.py` | Full preprocessing pipeline — filter, normalise, segment, train/test split |
+| `code/final_code.ipynb` | Main GAN training notebook (256 hidden units, 50 epochs, best visual results) |
 | `models/generator_epoch10.pth` | Generator checkpoint at epoch 10 |
 | `models/generator_final.pth` | Final generator weights |
 | `models/discriminator_epoch10.pth` | Discriminator checkpoint at epoch 10 |
@@ -67,7 +67,7 @@ All three quantitative metrics passed acceptance thresholds on the held-out test
 
 ```python
 # Preprocess raw data and get a DataLoader
-from preprocess import get_dataloader
+from code.preprocess import get_dataloader
 dataloader = get_dataloader(data_dir='./training2017')
 for batch in dataloader:
     real_data = batch[0]  # shape: (100, 3000, 1)
