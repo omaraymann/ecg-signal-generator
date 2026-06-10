@@ -15,6 +15,8 @@ The system trains a Generative Adversarial Network on 8,244 ECG recordings from 
 
 ## Preprocessing Pipeline
 
+Handled by `preprocess.py`:
+
 1. Load `.mat` files from PhysioNet 2017
 2. Bandpass filter (4th-order Butterworth, 0.5–40 Hz) to remove baseline wander and noise
 3. Per-recording min-max normalisation to `[0, 1]`
@@ -22,6 +24,31 @@ The system trains a Generative Adversarial Network on 8,244 ECG recordings from 
 5. Recording-level 80/20 train-test split to prevent data leakage
 
 **Output:** 21,021 training segments (`ecg_train.npy`) and 5,298 test segments (`ecg_test.npy`)
+
+## Dataset
+
+The preprocessed `.npy` files are not included in this repo due to size (300 MB total).  
+Download the raw dataset directly from PhysioNet:
+
+> **PhysioNet/CinC Challenge 2017 — AF Classification from a Short Single Lead ECG Recording**  
+> https://physionet.org/content/challenge-2017/
+
+Once downloaded, run the preprocessing script to regenerate the data files:
+
+```bash
+python preprocess.py
+```
+
+Or use it programmatically in a training loop:
+
+```python
+from preprocess import get_dataloader
+
+dataloader = get_dataloader(data_dir='./training2017')
+for epoch in range(500):
+    for batch in dataloader:
+        real_data = batch[0]  # shape: (100, 3000, 1)
+```
 
 ## Results
 
@@ -37,31 +64,23 @@ All three quantitative metrics passed acceptance thresholds on the held-out test
 
 | File | Description |
 |------|-------------|
-| `final_code.ipynb` | Main GAN training notebook (256 hidden units, 50 epochs, best visual results) |
-| `ecg_train.npy` | Preprocessed training data — 21,021 segments of shape `(3000,)` |
-| `ecg_test.npy` | Preprocessed test data — 5,298 segments, never used during training |
+| `preprocess.py` | Full preprocessing pipeline — filter, normalise, segment, split |
+| `final_code.ipynb` | Main GAN training notebook (256 hidden units, 50 epochs, best results) |
 | `generator_epoch10.pth` | Generator checkpoint at epoch 10 |
 | `generator_final.pth` | Final generator weights |
 | `discriminator_epoch10.pth` | Discriminator checkpoint at epoch 10 |
 | `discriminator_final.pth` | Final discriminator weights |
 
-## Usage
+## Usage — Load Trained Generator
 
 ```python
-# Load saved training data and create DataLoader
+import torch
 import numpy as np
-import torch
-from torch.utils.data import TensorDataset, DataLoader
 
-segments = np.load('ecg_train.npy')
-tensor = torch.FloatTensor(segments).unsqueeze(-1)
-dataloader = DataLoader(TensorDataset(tensor), batch_size=100, shuffle=True, drop_last=True)
-```
+# Load test data (after running preprocess.py)
+test_segments = np.load('processed_data/ecg_test.npy')
 
-```python
-# Load trained generator and generate synthetic ECG
-import torch
-# (define Generator class first)
+# Load trained generator (define Generator class first from final_code.ipynb)
 generator = Generator(hidden_dim=256)
 generator.load_state_dict(torch.load('generator_final.pth'))
 generator.eval()
