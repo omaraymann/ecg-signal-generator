@@ -58,10 +58,10 @@ All three quantitative metrics passed acceptance thresholds on the held-out test
 |------|-------------|
 | `preprocess.py` | Full preprocessing pipeline — filter, normalise, segment, train/test split |
 | `final_code.ipynb` | Main GAN training notebook (256 hidden units, 50 epochs, best visual results) |
-| `generator_epoch10.pth` | Generator checkpoint at epoch 10 |
-| `generator_final.pth` | Final generator weights |
-| `discriminator_epoch10.pth` | Discriminator checkpoint at epoch 10 |
-| `discriminator_final.pth` | Final discriminator weights |
+| `models/generator_epoch10.pth` | Generator checkpoint at epoch 10 |
+| `models/generator_final.pth` | Final generator weights |
+| `models/discriminator_epoch10.pth` | Discriminator checkpoint at epoch 10 |
+| `models/discriminator_final.pth` | Final discriminator weights |
 
 ## Usage
 
@@ -78,7 +78,7 @@ for batch in dataloader:
 import torch
 # (define Generator class first — see final_code.ipynb)
 generator = Generator(hidden_dim=256)
-generator.load_state_dict(torch.load('generator_final.pth'))
+generator.load_state_dict(torch.load('models/generator_final.pth'))
 generator.eval()
 
 noise = torch.randn(1, 3000, 5)
